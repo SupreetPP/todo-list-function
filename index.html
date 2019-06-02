@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>JSON</title>
+
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+
+    <div class="site">
+        <div class="message-display"></div>
+        <div class="site-box">
+            <div class="site-head">
+                <div class="site-head-lt">
+                    <h1>To Do List</h1>
+                </div>
+                <div class="site-head-rt">
+                    <button id="button-add">Add</button>
+                    <button id="button-toggle-complete">Hide Complete</button>
+                </div>
+            </div>
+            <div class="site-body">
+
+                <table class="table" id="table">
+                    <thead>
+                        <tr>
+                            <th>S.no.</th>
+                            <th>Name</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+
+                    </tbody>
+                </table>
+
+            </div>
+
+        </div>
+    </div>
+
+
+
+    <script>
+        var table = document.querySelector('table');
+        var tableBody = document.querySelector('tbody');
+
+        var buttonAdd = document.querySelector('#button-add');
+        var buttonToggleComplete = document.querySelector('#button-toggle-complete');
+
+
+        var messageDisplay = document.querySelector('.message-display');
+
+        var buttonComplete = [];
+        var buttonDelete = [];
+
+        buttonAddToArray();
+
+        function buttonAddToArray() {
+            buttonComplete = document.querySelectorAll('.button-complete');
+            buttonDelete = document.querySelectorAll('.button-delete');
+
+            for (i = 0; i < buttonComplete.length; i++) {
+                buttonComplete[i].onclick = sectionComplete;
+            }
+
+            for (i = 0; i < buttonDelete.length; i++) {
+                buttonDelete[i].onclick = sectionDelete;
+            }
+        }
+
+        function messageDelete() {
+            var messageDelete = document.createElement('span');
+            messageDelete.innerText = 'Section Deleted';
+            messageDelete.classList.add('message-delete', 'appear');
+
+            var duration = 3;
+            durationMilli = duration * 1000;
+
+            messageDelete.style.animationDuration = duration + 's';
+            messageDisplay.append(messageDelete);
+
+            setTimeout(function () {
+                messageDelete.remove();
+            }, durationMilli);
+        }
+
+        function timeTotal() {
+            var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            var dateCollect = new Date();
+            var dateDay = dateCollect.getDay();
+
+            var dayName = days[dateDay];
+
+            timeGet = new Date();
+            hour = timeGet.getHours();
+            min = timeGet.getMinutes();
+            seconds = timeGet.getSeconds();
+            meridiem = "AM";
+
+            if (hour > 12) {
+                meridiem = "PM";
+                hour = hour - 12;
+            }
+
+            if (hour < 10) {
+                hour = "0" + hour;
+            }
+
+            if (min < 10) {
+                min = "0" + min;
+            }
+
+            if (seconds < 10) {
+                seconds = "0" + seconds;
+            }
+
+            return (`${dayName} | ${hour}:${min}:${meridiem}`);
+        }
+
+
+        function outputTr(sn, name, date, status) {
+            var createTr = document.createElement('tr');
+
+            var createSn = document.createElement('td');
+            createSn.innerText = sn;
+
+            var createName = document.createElement('td');
+            createName.innerText = name;
+
+            var createDate = document.createElement('td');
+            createDate.innerText = timeTotal();
+
+            var createStatus = document.createElement('td');
+            createStatus.innerText = status;
+
+            var createOptions = document.createElement('td');
+
+            var createButton = document.createElement('button');
+            createButton.classList.add('button-complete');
+
+            var createButtonExit = document.createElement('button');
+            createButtonExit.classList.add('button-delete');
+
+            createOptions.append(createButton, createButtonExit);
+
+            createTr.append(createSn, createName, createDate, createStatus, createOptions);
+
+            return createTr;
+        }
+
+        function addInput() {
+            var name = prompt('Type Name');
+
+            var sn = 1;
+
+            if (name) {
+                if (tableBody.lastElementChild) {
+                    var latestNum = tableBody.lastElementChild.firstElementChild.innerText;
+                    sn = parseInt(latestNum) + 1;
+                }
+
+                tableBody.append(outputTr(sn, name, Date(), 'Ok'));
+            }
+
+            buttonAddToArray();
+        }
+
+        buttonAdd.onclick = addInput;
+
+
+        function sectionComplete(e) {
+            var clickedElement = e.srcElement;
+            targetTr = clickedElement.parentElement.parentElement;
+
+            targetTr.classList.toggle('complete');
+
+            console.log('Section Complete');
+        }
+
+        function sectionDelete(e) {
+            var clickedElement = e.srcElement;
+            targetTr = clickedElement.parentElement.parentElement;
+
+            targetTr.classList.toggle('delete');
+
+            setTimeout(function () {
+                targetTr.remove();
+            }, 3000);
+
+            messageDelete();
+            console.log('Section Deleted');
+        }
+
+        function sectionCompleteToggle(e) {
+            // buttonAddToArray();
+
+            var clickedElement = e.srcElement;
+
+            if (clickedElement.innerText == 'Hide Complete') {
+                clickedElement.innerText = 'Show Complete';
+                table.classList.add('complete-hide');
+
+            } else {
+                clickedElement.innerText = 'Hide Complete';
+                table.classList.remove('complete-hide');
+            }
+
+            // clickedElement.innerText = (clickedElement.innerText == 'Hide Complete') ? 'Show Complete' :
+            //     'Hide Complete';
+        }
+
+        buttonToggleComplete.onclick = sectionCompleteToggle;
+    </script>
+
+</body>
+
+</html>
